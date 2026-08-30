@@ -15,6 +15,7 @@ function App() {
   const searchQuery = useStore((s) => s.searchQuery);
   const sortBy = useStore((s) => s.sortBy);
   const setSortBy = useStore((s) => s.setSortBy);
+  const checkoutVersion = useStore((s) => s.checkoutVersion);
 
   const [showTop, setShowTop] = useState(false);
 
@@ -141,7 +142,7 @@ function App() {
 
       <ProductModal />
       <CartDrawer />
-      <MockCheckout />
+      <MockCheckout key={checkoutVersion} />
       <Toast />
 
       {/* Back to top */}

@@ -42,6 +42,7 @@ interface StoreState {
   // Checkout
   checkoutComplete: boolean;
   setCheckoutComplete: (complete: boolean) => void;
+  checkoutVersion: number;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -92,7 +93,10 @@ export const useStore = create<StoreState>((set) => ({
   selectedProduct: null,
   setSelectedProduct: (product) => set({ selectedProduct: product }),
   isCheckoutOpen: false,
-  setCheckoutOpen: (open) => set({ isCheckoutOpen: open }),
+  setCheckoutOpen: (open) => set((s) => ({
+    isCheckoutOpen: open,
+    checkoutVersion: open ? s.checkoutVersion + 1 : s.checkoutVersion,
+  })),
 
   // Toast
   toasts: [],
@@ -108,4 +112,5 @@ export const useStore = create<StoreState>((set) => ({
   // Checkout
   checkoutComplete: false,
   setCheckoutComplete: (complete) => set({ checkoutComplete: complete }),
+  checkoutVersion: 0,
 }));

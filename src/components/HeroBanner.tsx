@@ -23,7 +23,7 @@ export function HeroBanner() {
             Handcrafted with{' '}
             <span className="text-amber-600 relative">
               Love
-              <svg className="absolute -bottom-1 left-0 w-full h-3 text-amber-300" viewBox="0 0 200 12" fill="none">
+              <svg className="absolute -bottom-1 left-0 w-full h-3 text-amber-300" viewBox="0 0 200 12" fill="none" aria-hidden="true">
                 <path d="M2 8C40 2 100 2 198 8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
               </svg>
             </span>

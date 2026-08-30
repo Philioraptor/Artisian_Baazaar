@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { formatPrice } from '../utils';
 
@@ -10,6 +10,16 @@ export function MockCheckout() {
   const clearCart = useStore((s) => s.clearCart);
   const [step, setStep] = useState<'form' | 'processing' | 'done'>('form');
   const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const [orderId] = useState(() => `ART-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
+
+  useEffect(() => {
+    if (!isCheckoutOpen || step === 'processing') return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCheckoutOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isCheckoutOpen, step, setCheckoutOpen]);
 
   if (!isCheckoutOpen) return null;
 
@@ -22,18 +32,23 @@ export function MockCheckout() {
         setCheckoutComplete(true);
         clearCart();
         setCheckoutOpen(false);
-        setStep('form');
       }, 2000);
     }, 2000);
   };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => {
-      if (step !== 'processing') { setCheckoutOpen(false); setStep('form'); }
+      if (step !== 'processing') setCheckoutOpen(false);
     }}>
       <div className="absolute inset-0 bg-stone-900/70 backdrop-blur-sm" />
 
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Checkout"
+        className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {step === 'form' && (
           <>
             <div className="p-6 border-b border-stone-100">
@@ -42,7 +57,7 @@ export function MockCheckout() {
                   <h2 className="text-xl font-bold text-stone-900">Checkout</h2>
                   <p className="text-sm text-stone-500">Complete your order</p>
                 </div>
-                <button onClick={() => { setCheckoutOpen(false); setStep('form'); }} className="p-2 rounded-full hover:bg-stone-100 transition-colors">
+                <button onClick={() => setCheckoutOpen(false)} className="p-2 rounded-full hover:bg-stone-100 transition-colors">
                   <svg className="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -126,7 +141,7 @@ export function MockCheckout() {
             </div>
             <h3 className="text-xl font-bold text-stone-900 mb-2">Order Confirmed! 🎉</h3>
             <p className="text-sm text-stone-500 mb-1">Thank you for supporting local artisans.</p>
-            <p className="text-xs text-stone-400">Your order ID: ART-{Math.random().toString(36).substring(2, 8).toUpperCase()}</p>
+            <p className="text-xs text-stone-400">Your order ID: {orderId}</p>
           </div>
         )}
       </div>

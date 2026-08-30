@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { formatPrice } from '../utils';
 
@@ -14,6 +15,15 @@ export function CartDrawer() {
 
   const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
 
+  useEffect(() => {
+    if (!isCartOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCartOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isCartOpen, setCartOpen]);
+
   if (!isCartOpen) return null;
 
   return (
@@ -21,6 +31,9 @@ export function CartDrawer() {
       <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm" />
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shopping cart"
         className="relative w-full max-w-md bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={(e) => e.stopPropagation()}
       >
@@ -29,7 +42,7 @@ export function CartDrawer() {
             <h2 className="text-lg font-bold text-stone-900">Your Cart</h2>
             <p className="text-sm text-stone-500">{cart.length} item{cart.length !== 1 ? 's' : ''}</p>
           </div>
-          <button onClick={() => setCartOpen(false)} className="p-2 rounded-full hover:bg-stone-100 transition-colors">
+          <button onClick={() => setCartOpen(false)} aria-label="Close cart" className="p-2 rounded-full hover:bg-stone-100 transition-colors">
             <svg className="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
